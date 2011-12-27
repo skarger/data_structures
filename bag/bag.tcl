@@ -1,4 +1,6 @@
+package provide bag 1.0
 # Bag: a container for a group of items
+# Note: items are strings that do not contain whitespace
 # Supported operations:
 # add - add item to bag
 # remove - remove one occurrence (if any) from bag
@@ -6,53 +8,56 @@
 # grab - get a random item from the bag without removing it
 # to_array - get an array containing the current contents of the bag
 
-proc add {bag item} {
-    set bag "$bag $item"
-    set con [get_bag_contents $bag]
-    set blist [split $bag " "]
-    set num [lindex $blist 0]
-    incr num
-    set bag "$num $con"
-    return $bag
+proc bag_new {name} {
+    upvar $name b
+    array set b [list {num_items} {0} {contents} {""}]
 }
 
-proc get_bag_contents {bag} {
-    set blist [split $bag " "]
-    set rv ""
-    set i 0
-    foreach item $blist {
-        if {$i == 1} {
-            set rv [lindex $blist $i]
-        } elseif {$i > 0} {
-            set rv "$rv [lindex $blist $i]"
-        }
-        incr i
+proc add {bag item} {
+    upvar $bag b
+    if {$b(num_items) == 0} {
+        set b(contents) "$item"
+    } else {
+        set b(contents) "$b(contents) $item"
     }
-    return $rv
+    incr b(num_items)
+}
+
+proc remove {bag item} {
+    upvar $bag b
+    if {$b(num_items) == 0} {
+        puts "cannot remove from empty bag"
+        return
+    }
+    regsub $item $b(contents) "" temp
+    set b(contents) [string trim $temp]
+    incr b(num_items) -1
+}
+
+proc grab {bag} {
+    upvar $bag b
+    if {$b(num_items) == 0} {
+        puts "cannot grab from empty bag"
+        return
+    }        
+    set lst [split $b(contents)]
+    set len [llength $lst]
+    set idx [expr int( floor( $len * rand() ) )]
+    return [lindex $lst $idx]
 }
 
 proc num_items {bag} {
-    set blist [split $bag " "]
-    return [lindex $blist 0]
+    upvar $bag b
+    return $b(num_items)
 }
 
 proc to_array {bag} {
-    return [lindex $bag]
+    upvar $bag b
+    set bl [split $b(contents)]
+    return $bl
 }
 
-
-
-# the number of items in the bag is the first thing
-set bag "0"
-
-puts "An empty bag: [get_bag_contents $bag]"
-
-set bag [add $bag steve]
-puts -nonewline "Bag: [get_bag_contents $bag]"
-puts " Size: [num_items $bag]"
-
-
-set bag [add $bag karger]
-puts -nonewline "Bag: [get_bag_contents $bag]"
-puts " Size: [num_items $bag]"
-
+proc to_string {bag} {
+    upvar $bag b
+    return $b(contents)
+}
