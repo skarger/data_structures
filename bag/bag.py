@@ -36,34 +36,3 @@ class Bag:
     def to_array(self):
         return list(self.contents)
         
-
-b = Bag()
-print b.__doc__
-print "\nempty bag..."
-print b.num_items()
-
-print "\ntest add..."
-b.add("summer")
-print b.num_items()
-
-b.add("winter")
-print b.num_items()
-
-b.add(2)
-print b.num_items()
-
-print "\ntest grab twice..."
-print b.grab()
-print b.grab()
-
-print "\ntest remove..."
-b.remove("benjamin")
-print b.num_items()
-
-b.remove("winter")
-print b.num_items()
-
-print "\ntest to_array..."
-arr = b.to_array()
-print arr
-
