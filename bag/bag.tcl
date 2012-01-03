@@ -34,6 +34,12 @@ proc remove {bag item} {
     incr b(num_items) -1
 }
 
+proc contains {bag item} {
+    upvar $bag b
+    set result [regexp $item $b(contents) match]
+    return $result
+}
+
 proc grab {bag} {
     upvar $bag b
     if {$b(num_items) == 0} {
