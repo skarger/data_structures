@@ -33,6 +33,11 @@ class TestBag(unittest.TestCase):
         self.b.remove("summer")
         self.assertEqual(self.b.num_items(),0)
 
+    def test_contains(self):
+        self.assertFalse(self.b.contains("summer"))
+        self.b.add("summer")
+        self.assertTrue(self.b.contains("summer"))
+
     def test_grab(self):
         # with 3 items in the bag, enough grabs ought to return different items
         # the number of items should never change
