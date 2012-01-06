@@ -27,10 +27,7 @@ class Bag:
             print "item not in bag"
 
     def contains(self, item):
-        if item in self.contents:
-            return True
-        else:
-            return False
+        return (item in self.contents)
         
     def num_items(self):
         return self.n
