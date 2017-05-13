@@ -29,32 +29,51 @@ class Tree(object):
                 self.insert_at(parent.right, node)
         
 
-    def __str__(self):
-        level = 0
-        level_sets = {}
-        indent_before_root = 80
-        level_sets = self.gather(self.root, level, level_sets, indent_before_root)
-        lines = []
-        for idx, k in enumerate(sorted(level_sets.keys())):
-            line = [" "] * 160
-            for indent, data in level_sets[k]:
-                if data is not None:
-                    line[indent] = str(data)
-            lines.append("".join(line))
-        return "\n".join(lines)
+    def append_children(self, level_sets, level):
+        if all(node is None for node in level):
+            return True
+        else:
+            level_sets.append(level)
+            return False
 
-    def gather(self, parent, level, level_sets, indent):
-        if not level in level_sets:
-            level_sets[level] = []
-
-        if parent is None:
-            level_sets[level].append((indent, None))
-            return level_sets
-        
-        level_sets[level].append((indent, parent.data))
-        level_sets = self.gather(parent.left, level + 1, level_sets, int(indent - (20 / (level + 1))))
-        level_sets = self.gather(parent.right, level + 1, level_sets, int(indent + (20 / (level + 1))))
+    def bft(self):
+        root_level = [root]
+        level_sets = [root_level]
+        process_level = self.append_children
+        self.traverse(process_level, level_sets, root_level)
         return level_sets
+
+    def traverse(self, process_level, accumulator, current_level):
+        children = self.child_level(current_level)
+        should_terminate = process_level(accumulator, children)
+        if should_terminate:
+            return
+        else:
+            self.traverse(process_level, accumulator, children)
+        
+    def child_level(self, level):
+        nodes = []
+        for n in level:
+            if n is None:
+                nodes += [None, None]
+            else:
+                nodes += [n.left, n.right]
+        return nodes
+
+
+    def __str__(self):
+        level_sets = self.bft()
+        tree_string = ""
+        for level in level_sets:
+            tree_string +=("---\n")
+            for node in level:
+                if node is not None:
+                    tree_string += " {}".format(node.data)
+                else:
+                    tree_string += " X"
+            tree_string += "\n"
+        return tree_string
+
 
 
 if __name__ == "__main__":
